@@ -63,8 +63,8 @@ def get_pie_chart(entered_site):
         return pie_fig
     else:
         # return the outcomes piechart for a selected site
-        filtered_df = spacex_df.loc[spacex_df['Launch Site'] == entered_site]
-        pie_fig = px.pie(filtered_df, values='class', names = 'Launch Site', 
+        filtered_df = spacex_df.loc[spacex_df['Launch Site'] == entered_site].groupby(['Launch Site', 'class']).size().reset_index(name='class count')
+        pie_fig = px.pie(filtered_df, values='class count', names = 'class', 
         title ='Success Statistic of Launch Site')
         return pie_fig
 # TASK 4:
@@ -74,9 +74,9 @@ def get_pie_chart(entered_site):
               Input(component_id='payload-slider', component_property='value'))
 
 def update_schatter_chart(site_dropdown, slider_range):
-    if site_dropdown == 'ALL':
-        df = spacex_df
-        low, high = slider_range
+    df = spacex_df
+    low, high = slider_range
+    if site_dropdown == 'ALL':        
         mask = (df['Payload Mass (kg)'] > low) & (df['Payload Mass (kg)'] < high)
         fig = px.scatter(
             df[mask], x = "Payload Mass (kg)", y = "class", 
@@ -84,11 +84,11 @@ def update_schatter_chart(site_dropdown, slider_range):
         return fig
     
     else:                     
-        filtered_df_site = filtered_df[filtered_df['Launch Site'] == site_dropdown]
+        filtered_df_site = df[df['Launch Site'] == site_dropdown]
         scatter_fig = px.scatter(filtered_df_site, x = 'Payload Mass (kg)', y = 'class', 
                             color="Booster Version Category",
                             )
-        return fig
+        return scatter_fig
 
 # Run the app
 if __name__ == '__main__':
